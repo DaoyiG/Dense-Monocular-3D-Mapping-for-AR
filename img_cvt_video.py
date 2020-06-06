@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
 import os
-
 from os.path import isfile, join
 
+# the input image format better be png
 def convert_frames_to_video(pathIn,pathOut,fps):
     frame_array = []
     files = [f for f in os.listdir(pathIn) if isfile(join(pathIn, f))]
