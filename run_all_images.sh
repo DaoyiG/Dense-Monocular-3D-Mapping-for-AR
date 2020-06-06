@@ -7,16 +7,8 @@
 mkdir ./assets/output/
 for file in ./assets/data_samples/*
 do
-  python test_simple.py --image_path $file --model_name mono_1024x320 --no_cuda
-
+  python test_simple.py --image_path $file --output_path ./assets/output/ --model_name mono_1024x320 --no_cuda
 done
-
-echo "move the output image to the output folder under assets/"
-mv assets/data_samples/*.jpeg assets/output/
-
-echo "rename the jpeg files to png files"
-cd assets/output
-rename "s/_disp.jpeg/.png/" *
 
 wait
 
