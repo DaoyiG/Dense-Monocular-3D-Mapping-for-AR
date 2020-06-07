@@ -31,7 +31,7 @@ def parse_args():
                         help='path to a test image or folder of images', required=True)
     parser.add_argument('--output_depth', type=str,
                         help='path to depth output of the model', required=True)
-    parser.add_argument('--output_pose', type=str,
+    parser.add_argument('--output_npy', type=str,
                         help='path to pose output of the model', required=True)
     parser.add_argument('--model_name', type=str,
                         help='name of a pretrained model to use',
@@ -115,12 +115,12 @@ def test_simple(args):
 
 
     # SETTING OUTPUT PATH FOR POSE DATA
-    if os.path.isfile(args.output_pose):
-        pose_output_directory = os.path.dirname(args.output_pose)
-    elif os.path.isdir(args.output_pose):
-        pose_output_directory = args.output_pose
+    if os.path.isfile(args.output_npy):
+        npy_output_directory = os.path.dirname(args.output_npy)
+    elif os.path.isdir(args.output_npy):
+        npy_output_directory = args.output_npy
     else:
-        raise Exception("Can not find args.output_pose: {}".format(args.output_pose))
+        raise Exception("Can not find args.output_npy: {}".format(args.output_npy))
 
     print("-> Predicting on {:d} test images".format(len(paths)))
 
@@ -150,7 +150,7 @@ def test_simple(args):
 
             # Saving numpy file
             output_name = os.path.splitext(os.path.basename(image_path))[0]
-            name_dest_npy = os.path.join(pose_output_directory, "{}.npy".format(output_name))
+            name_dest_npy = os.path.join(npy_output_directory, "{}.npy".format(output_name))
             scaled_disp, _ = disp_to_depth(disp, 0.1, 100)
             np.save(name_dest_npy, scaled_disp.cpu().numpy())
 
