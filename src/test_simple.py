@@ -29,8 +29,10 @@ def parse_args():
 
     parser.add_argument('--image_path', type=str,
                         help='path to a test image or folder of images', required=True)
-    parser.add_argument('--output_path', type=str,
+    parser.add_argument('--output_depth', type=str,
                         help='path to depth output of the model', required=True)
+    parser.add_argument('--output_pose', type=str,
+                        help='path to pose output of the model', required=True)
     parser.add_argument('--model_name', type=str,
                         help='name of a pretrained model to use',
                         choices=[
@@ -96,23 +98,32 @@ def test_simple(args):
     if os.path.isfile(args.image_path):
         # Only testing on a single image
         paths = [args.image_path]
-        # output_directory = os.path.dirname(args.image_path)
     elif os.path.isdir(args.image_path):
         # Searching folder for images
         paths = glob.glob(os.path.join(args.image_path, '*.{}'.format(args.ext)))
-        # output_directory = args.image_path
     else:
         raise Exception("Can not find args.image_path: {}".format(args.image_path))
 
-    # SETTING OUTPUT PATH
-    if os.path.isfile(args.output_path):
-        output_directory = os.path.dirname(args.output_path)
-    elif os.path.isdir(args.output_path):
-        output_directory = args.output_path
+    # SETTING OUTPUT PATH FOR DEPTH IMAGES
+    if os.path.isfile(args.output_depth):
+        depth_output_directory = os.path.dirname(args.output_depth)
+    elif os.path.isdir(args.output_depth):
+        depth_output_directory = args.output_depth
     else:
-        raise Exception("Can not find args.output_path: {}".format(args.output_path))
+        raise Exception("Can not find args.output_depth: {}".format(args.output_depth))
+
+
+
+    # SETTING OUTPUT PATH FOR POSE DATA
+    if os.path.isfile(args.output_pose):
+        pose_output_directory = os.path.dirname(args.output_pose)
+    elif os.path.isdir(args.output_pose):
+        pose_output_directory = args.output_pose
+    else:
+        raise Exception("Can not find args.output_pose: {}".format(args.output_pose))
 
     print("-> Predicting on {:d} test images".format(len(paths)))
+
 
     # PREDICTING ON EACH IMAGE IN TURN
     with torch.no_grad():
@@ -139,7 +150,7 @@ def test_simple(args):
 
             # Saving numpy file
             output_name = os.path.splitext(os.path.basename(image_path))[0]
-            name_dest_npy = os.path.join(output_directory, "{}.npy".format(output_name))
+            name_dest_npy = os.path.join(pose_output_directory, "{}.npy".format(output_name))
             scaled_disp, _ = disp_to_depth(disp, 0.1, 100)
             np.save(name_dest_npy, scaled_disp.cpu().numpy())
 
@@ -151,7 +162,7 @@ def test_simple(args):
             colormapped_im = (mapper.to_rgba(disp_resized_np)[:, :, :3] * 255).astype(np.uint8)
             im = pil.fromarray(colormapped_im)
 
-            name_dest_im = os.path.join(output_directory, "{}.png".format(output_name))
+            name_dest_im = os.path.join(depth_output_directory, "{}.png".format(output_name))
             im.save(name_dest_im)
 
             print("   Processed {:d} of {:d} images - saved prediction to {}".format(

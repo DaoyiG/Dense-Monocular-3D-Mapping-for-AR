@@ -1,13 +1,14 @@
 #!/bin/bash
 
 # run this script under the directory of monodepth2
-# you may need to first put all the test images in a data_samples folder under assets/
-# run the test of monodepth2 function for all the image files in data_dir
+# you may need to first put all the test images in a test_images folder under assets/
+# run the test of monodepth2 function for all the image files in test_images folder
 
-mkdir ./assets/output/
-for file in ./assets/data_samples/*
+mkdir ./assets/output_depth/
+mkdir ./assets/output_pose/
+for file in ./assets/test_images/*
 do
-  python test_simple.py --image_path $file --output_path ./assets/output/ --model_name mono_1024x320 --no_cuda
+  python test_simple.py --image_path $file --output_depth ./assets/output_depth/ --output_pose ./assets/output_pose/ --model_name mono_1024x320 --no_cuda
 done
 
 wait
