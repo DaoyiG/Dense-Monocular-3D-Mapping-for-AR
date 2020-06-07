@@ -2,5 +2,6 @@
 __pycache__
 assets/output_depth/*
 assets/output_pose/*
+assets/output_npy/*
 
 models/*
