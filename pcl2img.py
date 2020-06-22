@@ -3,46 +3,62 @@ import numpy as np
 import cv2
 
 pcd = o3d.io.read_point_cloud("./data/fined_pcds.ply")
+# pcd = o3d.io.read_point_cloud("./data/aug1.ply")
+
 # pcd.transform([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
 # o3d.visualization.draw_geometries([pcd])
 
 point = np.asarray(pcd.points).T
-colors = np.asarray(pcd.colors)
-
+color = np.asarray(pcd.colors)
+print(color.shape)
 fx = 7.188560000000e+02;
 fy = 7.188560000000e+02;
 cx = 6.071928000000e+02;
 cy = 1.852157000000e+02;
 
-pose = np.array([[9.999978e-01, 5.272628e-04, -2.066935e-03, -4.690294e-02],
-                 [-5.296506e-04, 9.999992e-01, -1.154865e-03, -2.839928e-02],
-                 [2.066324e-03, 1.155958e-03, 9.999971e-01, 8.586941e-01],
-                 [0, 0, 0 ,1]])
-
-intrinsic = np.array([[fx, 0., cx, 0],
-                      [0., fy, cy, 0],
-                      [0., 0., 1., 0]])
+# pose = np.array([[9.999978e-01, 5.272628e-04, -2.066935e-03, -4.690294e-02],
+#                  [-5.296506e-04, 9.999992e-01, -1.154865e-03, -2.839928e-02],
+#                  [2.066324e-03, 1.155958e-03, 9.999971e-01, 8.586941e-01],
+#                  [0, 0, 0 ,1]])
+pose = np.eye(4)
+intrinsic = np.array([[fx, 0., cx],
+                      [0., fy, cy],
+                      [0., 0., 1.]])
 N = point.shape[1]
-point_homo = np.row_stack((point, np.ones([1, N])))
+# print(N)
+# point_homo = np.row_stack((point, np.ones([1, N])))
 
-print(np.min(point_homo[:,2]))
+# print(np.max(point_homo[:,2]))
 
-X_trans = pose.dot(point_homo)
-X_trans = intrinsic.dot(X_trans)
-depth = X_trans[2,:]
-image_coordinate = ((X_trans/depth)[0:2,:]).T
-
-# print(np.max(image_coordinate))
-
+# X_trans = pose.dot(point_homo)
+depth = point[2,:]
+print(np.max(depth))
+X_proj = point/depth
+# print(X_proj)
 height = 376
 width = 1241
-image = np.zeros([height, width, 3])
+# X_trans = intrinsic.dot(X_trans)
+# depth = X_trans[2,:]
+image_coordinate = ((intrinsic.dot(X_proj)[0:2,:]).T)
 
-for v in range(height):
-    for u in range(width):
-        pixel = image_coordinate[u*v, :]
-        if int(pixel[0]) >= 0 and int(pixel[0]) < width and int(pixel[1]) >= 0 and int(pixel[1]) < height:
-            image[v][u][:] = colors[u*v, :] * 255
+u_coordinates = np.floor(image_coordinate[:, 0]).astype(np.int64)
+v_coordinates = np.floor(image_coordinate[:, 1]).astype(np.int64)
+
+np.where(u_coordinates<1, 0, u_coordinates)
+np.where(v_coordinates<1, 0, v_coordinates)
+np.where(u_coordinates>width-1, 0, u_coordinates)
+np.where(v_coordinates>height-1, 0, v_coordinates)
+
+# pixel_u >= 1 and pixel_u < width-1 and pixel_v >= 1 and pixel_v < height-1:
+print(np.max(v_coordinates), np.min(v_coordinates))
+
+
+image = np.ones([height, width, 3])
+for i in [2,1,0,-1,-2]:
+    for j in [2,1,0, -1,-2]:
+        image[v_coordinates+i,u_coordinates+j,:] = color * 255
+print(image.shape)
+# image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
 
 cv2.imwrite("img.jpg",image)
 
