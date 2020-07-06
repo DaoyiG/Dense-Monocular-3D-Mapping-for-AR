@@ -31,8 +31,8 @@ def parse_args():
                         help='path to a test image or folder of images', required=True)
     parser.add_argument('--output_depth', type=str,
                         help='path to depth output of the model', required=True)
-    parser.add_argument('--output_npy', type=str,
-                        help='path to pose output of the model', required=True)
+    # parser.add_argument('--output_npy', type=str,
+    #                     help='path to pose output of the model', required=True)
     parser.add_argument('--model_name', type=str,
                         help='name of a pretrained model to use',
                         choices=[
@@ -45,11 +45,11 @@ def parse_args():
                             "mono_1024x320",
                             "stereo_1024x320",
                             "mono+stereo_1024x320"])
-    parser.add_argument('--ext', type=str,
-                        help='image extension to search for in folder', default="jpg")
-    parser.add_argument("--no_cuda",
-                        help='if set, disables CUDA',
-                        action='store_true')
+    # parser.add_argument('--ext', type=str,
+    #                     help='image extension to search for in folder', default="jpg")
+    # parser.add_argument("--no_cuda",
+    #                     help='if set, disables CUDA',
+    #                     action='store_true')
 
     return parser.parse_args()
 
@@ -113,59 +113,61 @@ def test_simple(args):
         raise Exception("Can not find args.output_depth: {}".format(args.output_depth))
 
 
-
-    # SETTING OUTPUT PATH FOR POSE DATA
-    if os.path.isfile(args.output_npy):
-        npy_output_directory = os.path.dirname(args.output_npy)
-    elif os.path.isdir(args.output_npy):
-        npy_output_directory = args.output_npy
-    else:
-        raise Exception("Can not find args.output_npy: {}".format(args.output_npy))
-
-    print("-> Predicting on {:d} test images".format(len(paths)))
+    # # SETTING OUTPUT PATH FOR POSE DATA
+    # if os.path.isfile(args.output_npy):
+    #     npy_output_directory = os.path.dirname(args.output_npy)
+    # elif os.path.isdir(args.output_npy):
+    #     npy_output_directory = args.output_npy
+    # else:
+    #     raise Exception("Can not find args.output_npy: {}".format(args.output_npy))
+    # 
+    # print("-> Predicting on {:d} test images".format(len(paths)))
 
 
     # PREDICTING ON EACH IMAGE IN TURN
     with torch.no_grad():
-        for idx, image_path in enumerate(paths):
-
-            if image_path.endswith("_disp.jpg"):
-                # don't try to predict disparity for a disparity image!
-                continue
-
-            # Load image and preprocess
-            input_image = pil.open(image_path).convert('RGB')
-            original_width, original_height = input_image.size
-            input_image = input_image.resize((feed_width, feed_height), pil.LANCZOS)
-            input_image = transforms.ToTensor()(input_image).unsqueeze(0)
-
-            # PREDICTION
-            input_image = input_image.to(device)
-            features = encoder(input_image)
-            outputs = depth_decoder(features)
-
-            disp = outputs[("disp", 0)]
-            disp_resized = torch.nn.functional.interpolate(
-                disp, (original_height, original_width), mode="bilinear", align_corners=False)
-
-            # Saving numpy file
-            output_name = os.path.splitext(os.path.basename(image_path))[0]
-            name_dest_npy = os.path.join(npy_output_directory, "{}.npy".format(output_name))
-            scaled_disp, _ = disp_to_depth(disp, 0.1, 100)
-            np.save(name_dest_npy, scaled_disp.cpu().numpy())
-
-            # Saving grey scale disparity image with type uint16
-            disp_resized *= 10000.0
-
-            disp_resized_np = disp_resized.squeeze().cpu().numpy().astype(np.uint16)
-
-            name_dest_im = os.path.join(depth_output_directory, "{}.png".format(output_name))
-            cv2.imwrite(name_dest_im, disp_resized_np)
-
-            print("   Processed {:d} of {:d} images - saved prediction to {}".format(
-                idx + 1, len(paths), name_dest_im))
-
-    print('-> Done!')
+        for i in range(30):
+            image_path = ""
+            
+            for idx, image_path in enumerate(paths):
+    
+                if image_path.endswith("_disp.jpg"):
+                    # don't try to predict disparity for a disparity image!
+                    continue
+    
+                # Load image and preprocess
+                input_image = pil.open(image_path).convert('RGB')
+                original_width, original_height = input_image.size
+                input_image = input_image.resize((feed_width, feed_height), pil.LANCZOS)
+                input_image = transforms.ToTensor()(input_image).unsqueeze(0)
+    
+                # PREDICTION
+                input_image = input_image.to(device)
+                features = encoder(input_image)
+                outputs = depth_decoder(features)
+    
+                disp = outputs[("disp", 0)]
+                disp_resized = torch.nn.functional.interpolate(
+                    disp, (original_height, original_width), mode="bilinear", align_corners=False)
+    
+                # Saving numpy file
+                output_name = os.path.splitext(os.path.basename(image_path))[0]
+                name_dest_npy = os.path.join(npy_output_directory, "{}.npy".format(output_name))
+                scaled_disp, _ = disp_to_depth(disp, 0.1, 100)
+                np.save(name_dest_npy, scaled_disp.cpu().numpy())
+    
+                # Saving grey scale disparity image with type uint16
+                disp_resized *= 10000.0
+    
+                disp_resized_np = disp_resized.squeeze().cpu().numpy().astype(np.uint16)
+    
+                name_dest_im = os.path.join(depth_output_directory, "{}.png".format(output_name))
+                cv2.imwrite(name_dest_im, disp_resized_np)
+    
+                print("   Processed {:d} of {:d} images - saved prediction to {}".format(
+                    idx + 1, len(paths), name_dest_im))
+    
+        print('-> Done!')
 
 
 if __name__ == '__main__':
