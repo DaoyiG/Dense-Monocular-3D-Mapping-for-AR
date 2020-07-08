@@ -1,9 +1,12 @@
 *.idea
+.DS_Store
+
 __pycache__
-assets/output_depth/*
-assets/output_pose/*
-assets/output_npy/*
-assets/output_depth_infi/*
-assets/output_npy_infi/*
+assets/output_depth_mono/*
+assets/output_npy_mono/*
+assets/output_depth_o3d/*
+assets/output_npy_o3d/*
+assets/output_depth_infinitam/*
+assets/output_rgb_infinitam/
 
 models/*
