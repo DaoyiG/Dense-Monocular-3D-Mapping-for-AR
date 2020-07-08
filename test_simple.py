@@ -50,9 +50,6 @@ def parse_args():
     parser.add_argument("--no_cuda",
                         help='if set, disables CUDA',
                         action='store_true')
-    parser.add_argument("--is_o3d",type=int,default=0,
-                        help='transfer the depth from monodepth to o3d')
-
     return parser.parse_args()
 
 
@@ -69,7 +66,7 @@ def test_simple(args):
 
     download_model_if_doesnt_exist(args.model_name)
     model_path = os.path.join("models", args.model_name)
-    print("-> Loading model from ", model_path)
+    # print("-> Loading model from ", model_path)
     encoder_path = os.path.join(model_path, "encoder.pth")
     depth_decoder_path = os.path.join(model_path, "depth.pth")
 
@@ -123,7 +120,7 @@ def test_simple(args):
     else:
         raise Exception("Can not find args.output_npy: {}".format(args.output_npy))
 
-    print("-> Predicting on {:d} test images".format(len(paths)))
+    # print("-> Predicting on {:d} test images".format(len(paths)))
 
 
     # PREDICTING ON EACH IMAGE IN TURN
@@ -166,22 +163,9 @@ def test_simple(args):
             name_dest_im = os.path.join(depth_output_directory, "{}.png".format(output_name))
             im.save(name_dest_im)
 
-            print("   Processed {:d} of {:d} images - saved monodepth prediction to {}".format(
-                idx + 1, len(paths), name_dest_im))
+            print("Saved depth prediction for presentation to {}".format(name_dest_im))
 
-            # save depth for o3d
-            if args.is_o3d is True:
-                _, dep = disp_to_depth(disp_resized_np, 0.1, 100)
-                dep *= 1000.0
-                depths_im = pil.fromarray(dep.astype(np.uint16))
-
-                name_dest_im = os.path.join(depth_output_directory, "{}.png".format(output_name))
-                depths_im.save(name_dest_im)
-
-                print("   Processed {:d} of {:d} images - saved o3d prediction to {}".format(
-                    idx + 1, len(paths), name_dest_im))
-
-    print('-> Done!')
+    # print('-> Done!')
 
 
 if __name__ == '__main__':
