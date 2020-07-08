@@ -25,7 +25,7 @@ from utils import download_model_if_doesnt_exist
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description='Simple testing funtion for Monodepthv2 models.')
+        description='Generate depth image using Monodepth2 for Open3d and InfiniTAM Reconstruction')
 
     parser.add_argument('--image_path', type=str,
                         help='path to a test image or folder of images', required=True)
@@ -50,6 +50,8 @@ def parse_args():
     parser.add_argument("--no_cuda",
                         help='if set, disables CUDA',
                         action='store_true')
+    parser.add_argument("--is_o3d",type=int,default=0,
+                        help='transfer the depth from monodepth to o3d')
 
     return parser.parse_args()
 
@@ -72,7 +74,7 @@ def test_simple(args):
     depth_decoder_path = os.path.join(model_path, "depth.pth")
 
     # LOADING PRETRAINED MODEL
-    print("   Loading pretrained encoder")
+    # print("   Loading pretrained encoder")
     encoder = networks.ResnetEncoder(18, False)
     loaded_dict_enc = torch.load(encoder_path, map_location=device)
 
@@ -84,7 +86,7 @@ def test_simple(args):
     encoder.to(device)
     encoder.eval()
 
-    print("   Loading pretrained decoder")
+    # print("   Loading pretrained decoder")
     depth_decoder = networks.DepthDecoder(
         num_ch_enc=encoder.num_ch_enc, scales=range(4))
 
@@ -111,7 +113,6 @@ def test_simple(args):
         depth_output_directory = args.output_depth
     else:
         raise Exception("Can not find args.output_depth: {}".format(args.output_depth))
-
 
 
     # SETTING OUTPUT PATH FOR POSE DATA
@@ -165,8 +166,20 @@ def test_simple(args):
             name_dest_im = os.path.join(depth_output_directory, "{}.png".format(output_name))
             im.save(name_dest_im)
 
-            print("   Processed {:d} of {:d} images - saved prediction to {}".format(
+            print("   Processed {:d} of {:d} images - saved monodepth prediction to {}".format(
                 idx + 1, len(paths), name_dest_im))
+
+            # save depth for o3d
+            if args.is_o3d is True:
+                _, dep = disp_to_depth(disp_resized_np, 0.1, 100)
+                dep *= 1000.0
+                depths_im = pil.fromarray(dep.astype(np.uint16))
+
+                name_dest_im = os.path.join(depth_output_directory, "{}.png".format(output_name))
+                depths_im.save(name_dest_im)
+
+                print("   Processed {:d} of {:d} images - saved o3d prediction to {}".format(
+                    idx + 1, len(paths), name_dest_im))
 
     print('-> Done!')
 
