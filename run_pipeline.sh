@@ -53,6 +53,14 @@ echo "Start Reconstruction Using Open3d"
 
 cd ./o3d/ReconstructionSystem/ && python run_system.py ./config/kitti_0.json --make --register --refine --integrate
 
+
+# run InfiniTAM
+#echo "===================================="
+#echo "Start Reconstruction Using InfiniTAM"
+#cd .. && cd .. && cd InfiniTAM_kitti/build/App/InfiniTAM/
+#./InfiniTAM [calib.txt] [rgb_path] [depth_path]
+
+
 wait
 
 echo "All done"
