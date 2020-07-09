@@ -21,11 +21,12 @@ from torchvision import transforms, datasets
 import networks
 from layers import disp_to_depth
 from utils import download_model_if_doesnt_exist
+import cv2
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description='Generate depth image using Monodepth2 for Open3d and InfiniTAM Reconstruction')
+        description='Simple testing funtion for Monodepthv2 models.')
 
     parser.add_argument('--image_path', type=str,
                         help='path to a test image or folder of images', required=True)
@@ -50,6 +51,7 @@ def parse_args():
     parser.add_argument("--no_cuda",
                         help='if set, disables CUDA',
                         action='store_true')
+
     return parser.parse_args()
 
 
@@ -111,18 +113,6 @@ def test_simple(args):
     else:
         raise Exception("Can not find args.output_depth: {}".format(args.output_depth))
 
-
-    # SETTING OUTPUT PATH FOR POSE DATA
-    if os.path.isfile(args.output_npy):
-        npy_output_directory = os.path.dirname(args.output_npy)
-    elif os.path.isdir(args.output_npy):
-        npy_output_directory = args.output_npy
-    else:
-        raise Exception("Can not find args.output_npy: {}".format(args.output_npy))
-
-    # print("-> Predicting on {:d} test images".format(len(paths)))
-
-
     # PREDICTING ON EACH IMAGE IN TURN
     with torch.no_grad():
         for idx, image_path in enumerate(paths):
@@ -148,22 +138,16 @@ def test_simple(args):
 
             # Saving numpy file
             output_name = os.path.splitext(os.path.basename(image_path))[0]
-            name_dest_npy = os.path.join(npy_output_directory, "{}.npy".format(output_name))
-            scaled_disp, _ = disp_to_depth(disp, 0.1, 100)
-            np.save(name_dest_npy, scaled_disp.cpu().numpy())
 
-            # Saving colormapped depth image
-            disp_resized_np = disp_resized.squeeze().cpu().numpy()
-            vmax = np.percentile(disp_resized_np, 95)
-            normalizer = mpl.colors.Normalize(vmin=disp_resized_np.min(), vmax=vmax)
-            mapper = cm.ScalarMappable(norm=normalizer, cmap='magma')
-            colormapped_im = (mapper.to_rgba(disp_resized_np)[:, :, :3] * 255).astype(np.uint8)
-            im = pil.fromarray(colormapped_im)
+            # Saving grey scale disparity image with type uint16
+            disp_resized *= 10000.0
+
+            disp_resized_np = disp_resized.squeeze().cpu().numpy().astype(np.uint16)
 
             name_dest_im = os.path.join(depth_output_directory, "{}.png".format(output_name))
-            im.save(name_dest_im)
+            cv2.imwrite(name_dest_im, disp_resized_np)
 
-            print("Saved depth prediction for Rendering to {}".format(name_dest_im))
+            print("Saved depth prediction for InfiniTAM to {}".format(name_dest_im))
 
     # print('-> Done!')
 

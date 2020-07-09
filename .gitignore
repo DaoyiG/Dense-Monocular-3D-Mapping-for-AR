@@ -1,12 +1,13 @@
 *.idea
 .DS_Store
-
+*.avi
 __pycache__
 assets/output_depth_mono/*
 assets/output_npy_mono/*
 assets/output_depth_o3d/*
-assets/output_npy_o3d/*
 assets/output_depth_infinitam/*
 assets/output_rgb_infinitam/
+
+o3d/ReconstructionSystem/dataset/kitti_0
 
 models/*

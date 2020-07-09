@@ -50,6 +50,7 @@ def parse_args():
     parser.add_argument("--no_cuda",
                         help='if set, disables CUDA',
                         action='store_true')
+
     return parser.parse_args()
 
 
@@ -146,24 +147,18 @@ def test_simple(args):
             disp_resized = torch.nn.functional.interpolate(
                 disp, (original_height, original_width), mode="bilinear", align_corners=False)
 
-            # Saving numpy file
+            # Saving depth image for o3d
             output_name = os.path.splitext(os.path.basename(image_path))[0]
-            name_dest_npy = os.path.join(npy_output_directory, "{}.npy".format(output_name))
-            scaled_disp, _ = disp_to_depth(disp, 0.1, 100)
-            np.save(name_dest_npy, scaled_disp.cpu().numpy())
-
-            # Saving colormapped depth image
             disp_resized_np = disp_resized.squeeze().cpu().numpy()
-            vmax = np.percentile(disp_resized_np, 95)
-            normalizer = mpl.colors.Normalize(vmin=disp_resized_np.min(), vmax=vmax)
-            mapper = cm.ScalarMappable(norm=normalizer, cmap='magma')
-            colormapped_im = (mapper.to_rgba(disp_resized_np)[:, :, :3] * 255).astype(np.uint8)
-            im = pil.fromarray(colormapped_im)
+
+            _, depths = disp_to_depth(disp_resized_np, 0.1, 100)
+            depths = depths * 1000
+            depths_im = pil.fromarray(depths.astype(np.uint32))
 
             name_dest_im = os.path.join(depth_output_directory, "{}.png".format(output_name))
-            im.save(name_dest_im)
+            depths_im.save(name_dest_im)
 
-            print("Saved depth prediction for Rendering to {}".format(name_dest_im))
+            print("Saved depth prediction for Open3d to {}".format(name_dest_im))
 
     # print('-> Done!')
 
