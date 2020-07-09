@@ -4,6 +4,28 @@ import bpy
 # switch on nodes and get reference
 bpy.context.scene.use_nodes = True
 tree = bpy.context.scene.node_tree
+   
+def assign_material(obj, materialname):
+    """This function assigns a material to an objects mesh.
+ 
+    :param obj: The object to assign the material to.
+    :type obj: bpy.types.Object
+    :param materialname: The materials name.
+    :type materialname: str
+ 
+    """
+    if materialname not in bpy.data.materials:
+        if materialname in defs.defaultmaterials:
+            materials.createPhobosMaterials()
+        else:
+            # print("###ERROR: material to be assigned does not exist.")
+            log("Material to be assigned does not exist.", "ERROR")
+            return None
+#    obj.data.materials[0] = bpy.data.materials[materialname]
+    obj.data.materials.append(bpy.data.materials[materialname])
+#    if bpy.data.materials[materialname].use_transparency:
+#        obj.show_transparent = True   
+
 
 # Clear all nodes in a mat
 def clear_material( material ):
@@ -68,29 +90,8 @@ def create_shadowcatecher(name):
     material.blend_method = 'BLEND'
     #Or with indices
     #link = links.new( diffuse.outputs[0], output.inputs[0] )
-    
-def assign_material(obj, materialname):
-    """This function assigns a material to an objects mesh.
  
-    :param obj: The object to assign the material to.
-    :type obj: bpy.types.Object
-    :param materialname: The materials name.
-    :type materialname: str
- 
-    """
-    if materialname not in bpy.data.materials:
-        if materialname in defs.defaultmaterials:
-            materials.createPhobosMaterials()
-        else:
-            # print("###ERROR: material to be assigned does not exist.")
-            log("Material to be assigned does not exist.", "ERROR")
-            return None
-#    obj.data.materials[0] = bpy.data.materials[materialname]
-    obj.data.materials.append(bpy.data.materials[materialname])
-#    if bpy.data.materials[materialname].use_transparency:
-#        obj.show_transparent = True   
-
-def create_compositor(img_path):
+def create_compositor(img_name):
     # clear default nodes
     for node in tree.nodes:
         tree.nodes.remove(node)
@@ -105,9 +106,7 @@ def create_compositor(img_path):
 
     comp_node = tree.nodes.new('CompositorNodeComposite')   
     
-    bpy.ops.image.open(filepath=img_path, show_multiview=False)
-    img_name = img_path.split("/")[-1]
-    
+#    print(img_name)
     image_node.image = bpy.data.images[img_name]
 
     image_node.location = 0,0
@@ -120,7 +119,7 @@ def create_compositor(img_path):
     link3 = links.new(converter.outputs[0], comp_node.inputs[0])
 
 
-def prepare_camera(focal=21):
+def prepare_camera(img_name, focal=21):
     scene = bpy.context.collection
     if bpy.data.objects.get("Camera") is not None:
         bpy.data.objects.remove(bpy.data.objects["Camera"],do_unlink=True)
@@ -130,20 +129,23 @@ def prepare_camera(focal=21):
     scene.objects.link(cam)
     bpy.context.scene.camera = cam
 
-    cam.location = (0, 0, 0)
+    cam.data.show_background_images = True
+    bg = cam.data.background_images.new()
+    bg.image = bpy.data.images[img_name]
 
+    cam.location = (0, 0, 0)
     cam.rotation_mode = 'XYZ'
     cam.rotation_euler = (0, 3.1416, 3.1416)
     
 
-def prepare_sun_light(position, rotation, energy=8, color=(1,1,1)):
+def prepare_sun_light(location, rotation, energy=8, color=(1,1,1)):
 #    bpy.data.objects.remove(bpy.data.objects["Light"],do_unlink=True)
     if bpy.data.objects.get("Sun") is not None:
         bpy.data.objects.remove(bpy.data.objects["Sun"],do_unlink=True)
         
     bpy.ops.object.light_add(type="SUN")
     light_ob = bpy.context.object
-    light_ob.location = position
+    light_ob.location = location
     light_ob.rotation_euler = (rotation[0]*3.1416/180, rotation[1]*3.1416/180, rotation[2]*3.1416/180)
     light = light_ob.data
     light.energy = energy
@@ -174,13 +176,24 @@ def import_scene(path):
     pass
 
 def main():
+    img_path = "I://Dense-Monocular-3D-Mapping-for-AR//ar_pipeline//city1.png"
+    img = bpy.data.images.load(img_path)
+    img_name = img_path.split("/")[-1]
+    
     prepare_ground(location=(0,0.15,0.0))
-    prepare_camera(21)
-    prepare_sun_light((0,-1.8,0),(173,41.4,127),10)
+    
+    prepare_camera(img_name, 21)
+    
+    prepare_sun_light(location=(0,-1.8,0),rotation=(173,41.4,127), energy = 10)
+    
     create_shadowcatecher("shadow_catcher")
-    create_compositor("C://Users//Lenovo//Documents//city.png")
+    
+    create_compositor(img_name)
+    
     catcher = bpy.data.objects['Plane']
+    
     assign_material(catcher, "shadow_catcher")
+    
     path = 'C://Users//Lenovo//Desktop//img.jpg'
     render(1241, 376, path)
     
