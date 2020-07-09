@@ -13,7 +13,7 @@ def convert_frames_to_video(pathIn,pathOut,fps):
     files.sort()
 
     for i in range(len(files)):
-        filename=pathIn + files[i]
+        filename = pathIn + files[i]
         #reading each files
         img = cv2.imread(filename)
         height, width, layers = img.shape
@@ -32,8 +32,8 @@ def convert_frames_to_video(pathIn,pathOut,fps):
 def main():
 
     # You need to define your own input dir
-    pathIn= ''
-    pathOut = 'video.avi'
+    pathIn= '../assets/output_depth_mono/'
+    pathOut = 'monodepth.avi'
     fps = 15.0
     convert_frames_to_video(pathIn, pathOut, fps)
 

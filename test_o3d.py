@@ -158,7 +158,7 @@ def test_simple(args):
             name_dest_im = os.path.join(depth_output_directory, "{}.png".format(output_name))
             depths_im.save(name_dest_im)
 
-            print("Saved depth prediction for Open3d Reconstruction to {}".format(name_dest_im))
+            print("Saved depth prediction for Open3d to {}".format(name_dest_im))
 
     # print('-> Done!')
 

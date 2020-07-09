@@ -1,6 +1,6 @@
 *.idea
 .DS_Store
-
+*.avi
 __pycache__
 assets/output_depth_mono/*
 assets/output_npy_mono/*

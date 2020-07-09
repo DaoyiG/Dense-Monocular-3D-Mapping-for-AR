@@ -163,7 +163,7 @@ def test_simple(args):
             name_dest_im = os.path.join(depth_output_directory, "{}.png".format(output_name))
             im.save(name_dest_im)
 
-            print("Saved depth prediction for presentation to {}".format(name_dest_im))
+            print("Saved depth prediction for Rendering to {}".format(name_dest_im))
 
     # print('-> Done!')
 
