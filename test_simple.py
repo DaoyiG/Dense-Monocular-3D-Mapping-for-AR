@@ -7,6 +7,7 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+import cv2
 import sys
 import glob
 import argparse
@@ -33,6 +34,10 @@ def parse_args():
                         help='path to depth output of the model', required=True)
     parser.add_argument('--output_npy', type=str,
                         help='path to pose output of the model', required=True)
+    parser.add_argument('--output_depth_o3d', type=str,
+                        help='path to depth output for open3d', required=True)
+    parser.add_argument('--output_depth_infi', type=str,
+                        help='path to depth output for infinitam', required=True)
     parser.add_argument('--model_name', type=str,
                         help='name of a pretrained model to use',
                         choices=[
@@ -111,6 +116,21 @@ def test_simple(args):
     else:
         raise Exception("Can not find args.output_depth: {}".format(args.output_depth))
 
+    # SETTING OUTPUT PATH FOR O3D DEPTH IMAGES
+    if os.path.isfile(args.output_depth_o3d):
+        o3d_output_directory = os.path.dirname(args.output_depth_o3d)
+    elif os.path.isdir(args.output_depth_o3d):
+        o3d_output_directory = args.output_depth_o3d
+    else:
+        raise Exception("Can not find args.output_depth_o3d: {}".format(args.output_depth_o3d))
+
+    # SETTING OUTPUT PATH FOR O3D DEPTH IMAGES
+    if os.path.isfile(args.output_depth_infi):
+        infi_output_directory = os.path.dirname(args.output_depth_infi)
+    elif os.path.isdir(args.output_depth_infi):
+        infi_output_directory = args.output_depth_infi
+    else:
+        raise Exception("Can not find args.output_depth_infi: {}".format(args.output_depth_infi))
 
     # SETTING OUTPUT PATH FOR POSE DATA
     if os.path.isfile(args.output_npy):
@@ -148,12 +168,15 @@ def test_simple(args):
 
             # Saving numpy file
             output_name = os.path.splitext(os.path.basename(image_path))[0]
-            name_dest_npy = os.path.join(npy_output_directory, "{}.npy".format(output_name))
-            scaled_disp, _ = disp_to_depth(disp, 0.1, 100)
-            np.save(name_dest_npy, scaled_disp.cpu().numpy())
+            # name_dest_npy = os.path.join(npy_output_directory, "{}.npy".format(output_name))
+            # scaled_disp, _ = disp_to_depth(disp, 0.1, 100)
+            # np.save(name_dest_npy, scaled_disp.cpu().numpy())
 
             # Saving colormapped depth image
             disp_resized_np = disp_resized.squeeze().cpu().numpy()
+
+            disp1 = disp_resized_np
+
             vmax = np.percentile(disp_resized_np, 95)
             normalizer = mpl.colors.Normalize(vmin=disp_resized_np.min(), vmax=vmax)
             mapper = cm.ScalarMappable(norm=normalizer, cmap='magma')
@@ -164,6 +187,27 @@ def test_simple(args):
             im.save(name_dest_im)
 
             print("Saved depth prediction for Rendering to {}".format(name_dest_im))
+
+            # convert and save depth image for o3d
+            _, dep3d = disp_to_depth(disp1, 0.1, 100)
+            dep3d *= 1000
+
+            depths_o3d = pil.fromarray(dep3d.astype(np.uint32))
+
+            name_dest_o3d = os.path.join(o3d_output_directory, "{}.png".format(output_name))
+            depths_o3d.save(name_dest_o3d)
+
+            print("Saved depth prediction for Open3d to {}".format(name_dest_o3d))
+
+            # convert and save depth image for infinitam
+            depinfi = disp_resized * 10000.0
+            depinfi_np = depinfi.squeeze().cpu().numpy().astype(np.uint16)
+
+            name_dest_infi = os.path.join(infi_output_directory, "{}.png".format(output_name))
+            cv2.imwrite(name_dest_infi, depinfi_np)
+
+            print("Saved depth prediction for InfiniTAM to {}".format(name_dest_infi))
+
 
     # print('-> Done!')
 
