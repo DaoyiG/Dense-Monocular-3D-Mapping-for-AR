@@ -1,0 +1,33 @@
+{
+	"class_name" : "PoseGraph",
+	"edges" : null,
+	"nodes" : 
+	[
+		{
+			"class_name" : "PoseGraphNode",
+			"pose" : 
+			[
+				1.0,
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				1.0,
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				1.0,
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				1.0
+			],
+			"version_major" : 1,
+			"version_minor" : 0
+		}
+	],
+	"version_major" : 1,
+	"version_minor" : 0
+}

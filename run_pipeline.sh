@@ -71,6 +71,12 @@ sleep 1
 cd $dir/o3d/ReconstructionSystem/
 python run_system.py $dir/o3d/ReconstructionSystem/config/kitti_0.json --make --register --refine --integrate
 
+echo "===================================="
+echo "Visualize Reconstruction"
+echo "===================================="
+cd $dir/src
+python pcd_vis.py --scene_path $dir/o3d/ReconstructionSystem/dataset/kitti_0/scene/integrated.ply --ext ply
+
 # run InfiniTAM
 echo "===================================="
 echo "Start Reconstruction Using InfiniTAM"
@@ -86,6 +92,12 @@ cd $HOME/Infinitam_kitti/InfiniTAM/build/Apps/InfiniTAM/
 echo "===================================="
 echo "Reconstruction Finished"
 echo "===================================="
+
+echo "===================================="
+echo "Visualize Reconstruction"
+echo "===================================="
+cd $dir/src
+python pcd_vis.py --scene_path $HOME/Infinitam_kitti/InfiniTAM/build/Apps/InfiniTAM/color_mesh.obj --ext obj
 
 wait
 
