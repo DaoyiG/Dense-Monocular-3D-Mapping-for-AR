@@ -1,6 +1,7 @@
 *.idea
 .DS_Store
 *.avi
+*.mp4
 *.ply
 *.obj
 __pycache__

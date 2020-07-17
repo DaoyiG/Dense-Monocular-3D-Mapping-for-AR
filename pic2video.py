@@ -25,10 +25,16 @@ def convert_frames_to_video(args):
     #for sorting the file names properly
     files.sort()
 
+
     for i in range(len(files)):
         filename = args.image_path + files[i]
+
+        if files[i] == '.DS_Store':
+            continue
+
         #reading each files
         img = cv2.imread(filename)
+
         height, width, layers = img.shape
         size = (width,height)
         # print(filename)
