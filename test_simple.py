@@ -197,7 +197,7 @@ def test_simple(args):
             name_dest_o3d = os.path.join(o3d_output_directory, "{}.png".format(output_name))
             depths_o3d.save(name_dest_o3d)
 
-            print("Saved depth prediction for Open3d to {}".format(name_dest_o3d))
+            print("Saved depth prediction for Open3d    to {}".format(name_dest_o3d))
 
             # convert and save depth image for infinitam
             depinfi = disp_resized * 10000.0
