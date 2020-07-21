@@ -148,7 +148,8 @@ def create_shadowcatcher(name):
 
     diffuse2.inputs[0].default_value = (0, 0, 0, 1)
     colorramp.color_ramp.elements[0].color = (0, 0, 0, 1)
-    colorramp.color_ramp.elements[1].position = (0.5)
+    colorramp.color_ramp.elements[0].position = 0.4
+    colorramp.color_ramp.elements[1].position = 0.6
     colorramp.color_ramp.elements[1].color = (1, 1, 1, 1)
 
     # With names
@@ -218,7 +219,7 @@ def create_env_mapping(env_map_name):
     node_tree.nodes["Mapping"].inputs["Rotation"].default_value = (PI / 2, PI, PI / 2)
 
     # set strength
-    node_tree.nodes["Background"].inputs["Strength"].default_value = 0.4
+    node_tree.nodes["Background"].inputs["Strength"].default_value = 1
 
 
 def main(source_img_path, env_map_path, obj_path, out_path, obj_location=None):

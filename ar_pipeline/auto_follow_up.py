@@ -128,7 +128,8 @@ def create_shadowcatcher(name):
 
     diffuse2.inputs[0].default_value = (0, 0, 0, 1)
     colorramp.color_ramp.elements[0].color = (0, 0, 0, 1)
-    colorramp.color_ramp.elements[1].position = (0.5)
+    colorramp.color_ramp.elements[0].position = 0.4
+    colorramp.color_ramp.elements[1].position = 0.6
     colorramp.color_ramp.elements[1].color = (1, 1, 1, 1)
 
     # With names
@@ -198,10 +199,11 @@ def create_env_mapping(env_map_name):
     node_tree.nodes["Mapping"].inputs["Rotation"].default_value = (PI / 2, PI, PI / 2)
 
     # set strength
-    node_tree.nodes["Background"].inputs["Strength"].default_value = 0.4
+    node_tree.nodes["Background"].inputs["Strength"].default_value = 1
 
 
-def main(source_img_path, env_map_path, obj_path, out_path, obj_location=None, obj_rotation=None):
+def main(source_img_path, env_map_path, obj_path, out_path,
+         obj_location=None, obj_rotation=None, light_rotation=None):
     if bpy.data.objects.get("Plane") is None:
         bpy.ops.mesh.primitive_plane_add()
     if bpy.data.objects.get("Light") is not None:
@@ -215,7 +217,10 @@ def main(source_img_path, env_map_path, obj_path, out_path, obj_location=None, o
     bpy.data.objects['Plane'].location = (0, 0.15, 0)
 
     bpy.data.objects['Sun'].location = (0, -1.8, 0)
-    bpy.data.objects['Sun'].rotation_euler = (PI, PI / 4, PI * 0.75)
+    if light_rotation is None:
+        bpy.data.objects['Sun'].rotation_euler = (PI, PI / 4, PI * 0.75)
+    else:
+        bpy.data.objects['Sun'].rotation_euler = light_rotation
     bpy.data.lights["Sun"].energy = 16
     bpy.data.lights["Sun"].color = (1, 1, 1)
 
@@ -292,11 +297,14 @@ def get_global_args():
     parser.add_argument("--pose",
                         help="path to poses: .txt",
                         default="/home/chendi/Downloads/poses/")
+    parser.add_argument("--light",
+                        help="rotation of light source",
+                        default="/home/chendi/Downloads/light.txt")
     parser.add_argument("--stride",
                         help="stride for the follow up distance",
                         default=10)
     args = parser.parse_args()
-    return args.bg, args.env, args.stride, args.pose, args.obj, args.out
+    return args.bg, args.env, args.stride, args.pose, args.obj, args.out, args.light
 
 
 def rot2eul(R):
@@ -320,13 +328,15 @@ def eul2rot(theta):
 
 if __name__ == "__main__":
 
-    img_dir, hdr_dir, stride, pose_dir, obj_path, out_dir = get_global_args()
+    img_dir, hdr_dir, stride, pose_dir, obj_path, out_dir, light_dir = get_global_args()
     scenes = sorted(os.listdir(img_dir))
-    # scenes = [scenes[1]]  # only for debugging
+    # scenes = [scenes[2]]  # only for debugging
     poses_file = sorted(os.listdir(pose_dir))
+    light_rots = np.loadtxt(light_dir)
+    light_rots = light_rots / 180 * PI
 
-    for scene in scenes:
-        imgs = sorted(os.listdir(os.path.join(img_dir + scene)))
+    for idx, scene in enumerate(scenes):
+        imgs = sorted(os.listdir(os.path.join(img_dir, scene)))
         for img in imgs[0:-1 - stride]:
             img_num = int(img.split('.')[0])
             pose1 = np.loadtxt(pose_dir + poses_file[img_num]).reshape(3, 4)
@@ -340,7 +350,8 @@ if __name__ == "__main__":
             rotation = rot2eul(R)
 
             source_img_path = os.path.join(img_dir, scene, img)
-            env_map_path = os.path.join(hdr_dir, scene, 'AnyConv.com__' + img.split('.')[0] + '.hdr')
+            env_map_path = os.path.join(hdr_dir, scene, img.split('.')[0] + '.hdr')
             out_path = os.path.join(out_dir, scene, img.split('.')[0] + '.jpg')
 
-            main(source_img_path, env_map_path, obj_path, out_path, obj_location, rotation)
+            main(source_img_path, env_map_path, obj_path, out_path,
+                 obj_location, rotation, tuple(light_rots[idx, :]))
