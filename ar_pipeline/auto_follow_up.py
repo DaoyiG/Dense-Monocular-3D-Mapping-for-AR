@@ -258,10 +258,7 @@ def main(source_img_path, env_map_path, obj_path, out_path,
     if bpy.data.objects.get(obj_name) is None:
         Bus = bpy.ops.import_scene.obj(filepath=obj_path)
 
-    bpy.data.objects[obj_name].scale = (1e-4, 1e-4, 1e-4)
-    if obj_rotation is None:
-        bpy.data.objects[obj_name].rotation_euler = (177 / 180 * PI, PI / 2, 0)
-    else:
+    if obj_rotation is not None:
         bpy.data.objects[obj_name].rotation_euler = obj_rotation
 
     if obj_location is None:
@@ -284,22 +281,22 @@ def get_global_args():
 
     parser.add_argument("--obj",
                         help="path to augment object: .obj",
-                        default="/home/chendi/Downloads/Bus obj/Bus.obj")
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/scaled_objs/Bus.obj")
     parser.add_argument("--bg",
                         help="path to camera background image: .png",
-                        default="/home/chendi/Downloads/subscenes/")
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/subscenes/")
     parser.add_argument("--env",
                         help="path to mapping environment: .hdr",
-                        default="/home/chendi/Downloads/hdrs/")
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/hdrs/")
     parser.add_argument("--out",
                         help="path to output image: .jpg",
-                        default="/home/chendi/Downloads/outputs/")
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/outputs/")
     parser.add_argument("--pose",
                         help="path to poses: .txt",
-                        default="/home/chendi/Downloads/poses/")
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/poses/")
     parser.add_argument("--light",
                         help="rotation of light source",
-                        default="/home/chendi/Downloads/light.txt")
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/light.txt")
     parser.add_argument("--stride",
                         help="stride for the follow up distance",
                         default=10)
@@ -346,8 +343,7 @@ if __name__ == "__main__":
             pose = np.matmul(np.linalg.inv(pose1), pose2)
             obj_location = (pose[0, 3] / 10, 0.09, pose[2, 3] / 10)
 
-            R = np.matmul(pose[0:3, 0:3], eul2rot((177 / 180 * PI, PI / 2, 0)))
-            rotation = rot2eul(R)
+            rotation = rot2eul(pose[0:3, 0:3])
 
             source_img_path = os.path.join(img_dir, scene, img)
             env_map_path = os.path.join(hdr_dir, scene, img.split('.')[0] + '.hdr')

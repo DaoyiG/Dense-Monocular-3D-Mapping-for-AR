@@ -59,16 +59,16 @@ def get_args():
 
     parser.add_argument("--obj",
                         help="path to augment object: .obj",
-                        default="/home/chendi/Downloads/Bus obj/Bus.obj")
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/scaled_objs/Bus.obj")
     parser.add_argument("--bg",
                         help="path to camera background image: .png",
-                        default="/home/chendi/Downloads/city1.png")
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/city1.png")
     parser.add_argument("--env",
                         help="path to mapping environment: .hdr",
-                        default="/home/chendi/Downloads/city1.hdr")
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/city1.hdr")
     parser.add_argument("--out",
                         help="path to output image: .jpg",
-                        default="/home/chendi/Downloads/image.jpg")
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/image.jpg")
     args = parser.parse_args()
     return args
 
@@ -274,8 +274,8 @@ def main(source_img_path, env_map_path, obj_path, out_path, obj_location=None):
     if bpy.data.objects.get(obj_name) is None:
         Bus = bpy.ops.import_scene.obj(filepath=obj_path)
 
-    bpy.data.objects[obj_name].scale = (1e-4, 1e-4, 1e-4)
-    bpy.data.objects[obj_name].rotation_euler = (177 / 180 * PI, -PI / 2, 0)
+    # bpy.data.objects[obj_name].scale = (1e-4, 1e-4, 1e-4)
+    # bpy.data.objects[obj_name].rotation_euler = (177 / 180 * PI, -PI / 2, 0)
 
     if obj_location is None:
         bpy.data.objects[obj_name].location = (0, 0.09, 1.15)
