@@ -4,7 +4,7 @@
 # --env "your hdr path" \
 # --out "output img path"
 
-
+import os
 import argparse
 import sys
 import bpy
@@ -57,9 +57,11 @@ class ArgumentParserForBlender(argparse.ArgumentParser):
 def get_args():
     parser = ArgumentParserForBlender()
 
+    parser.add_argument("--obj_dir",
+                        help="dir to augment object: ",
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/scaled_objs")
     parser.add_argument("--obj",
-                        help="path to augment object: .obj",
-                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/scaled_objs/Bus.obj")
+                        help="select obj: Bus / chev")
     parser.add_argument("--bg",
                         help="path to camera background image: .png",
                         default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/city1.png")
@@ -222,7 +224,7 @@ def create_env_mapping(env_map_name):
     node_tree.nodes["Background"].inputs["Strength"].default_value = 1
 
 
-def main(source_img_path, env_map_path, obj_path, out_path, obj_location=None):
+def main(source_img_path, env_map_path, obj_dir, obj_name, out_path, obj_location=None):
     if bpy.data.objects.get("Plane") is None:
         bpy.ops.mesh.primitive_plane_add()
     if bpy.data.objects.get("Light") is not None:
@@ -263,22 +265,20 @@ def main(source_img_path, env_map_path, obj_path, out_path, obj_location=None):
     assign_material(catcher, "shadow_catcher")
 
     # environment mapping
-    # env_map_path = args.env
     env_map = bpy.data.images.load(env_map_path)
     env_map_name = env_map_path.split("/")[-1]
     create_env_mapping(env_map_name)
 
     # pre_import
-    # obj_path = args.obj
-    obj_name = obj_path.split("/")[-1].split(".")[0]
     if bpy.data.objects.get(obj_name) is None:
-        Bus = bpy.ops.import_scene.obj(filepath=obj_path)
-
-    # bpy.data.objects[obj_name].scale = (1e-4, 1e-4, 1e-4)
-    # bpy.data.objects[obj_name].rotation_euler = (177 / 180 * PI, -PI / 2, 0)
+        path = os.path.join(obj_dir, obj_name + ".obj")
+        myobj = bpy.ops.import_scene.obj(filepath=path)
 
     if obj_location is None:
-        bpy.data.objects[obj_name].location = (0, 0.09, 1.15)
+        if obj_name == "Bus":
+            bpy.data.objects[obj_name].location = (0, 0.09, 1.15)
+        else:
+            bpy.data.objects[obj_name].location = (0, 0.06, 1.15)
     else:
         bpy.data.objects[obj_name].location = obj_location
 
@@ -295,4 +295,4 @@ def main(source_img_path, env_map_path, obj_path, out_path, obj_location=None):
 if __name__ == "__main__":
     args = get_args()
 
-    main(args.bg, args.env, args.obj, args.out)
+    main(args.bg, args.env, args.obj_dir, args.obj, args.out)

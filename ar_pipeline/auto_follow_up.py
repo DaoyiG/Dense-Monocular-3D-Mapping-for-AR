@@ -202,7 +202,7 @@ def create_env_mapping(env_map_name):
     node_tree.nodes["Background"].inputs["Strength"].default_value = 1
 
 
-def main(source_img_path, env_map_path, obj_path, out_path,
+def main(source_img_path, env_map_path, obj_dir, obj_name, out_path,
          obj_location=None, obj_rotation=None, light_rotation=None):
     if bpy.data.objects.get("Plane") is None:
         bpy.ops.mesh.primitive_plane_add()
@@ -231,7 +231,6 @@ def main(source_img_path, env_map_path, obj_path, out_path,
     bpy.context.scene.camera.location = (0, 0, 0)
     bpy.context.scene.camera.rotation_euler = (0, PI, PI)
 
-    # source_img_path = args.bg
     img = bpy.data.images.load(source_img_path)
     img_name = source_img_path.split("/")[-1]
     bpy.data.cameras[0].show_background_images = True
@@ -247,16 +246,14 @@ def main(source_img_path, env_map_path, obj_path, out_path,
     assign_material(catcher, "shadow_catcher")
 
     # environment mapping
-    # env_map_path = args.env
     env_map = bpy.data.images.load(env_map_path)
     env_map_name = env_map_path.split("/")[-1]
     create_env_mapping(env_map_name)
 
     # pre_import
-    # obj_path = args.obj
-    obj_name = obj_path.split("/")[-1].split(".")[0]
     if bpy.data.objects.get(obj_name) is None:
-        Bus = bpy.ops.import_scene.obj(filepath=obj_path)
+        path = os.path.join(obj_dir, obj_name + ".obj")
+        bpy.ops.import_scene.obj(filepath=path)
 
     if obj_rotation is not None:
         bpy.data.objects[obj_name].rotation_euler = obj_rotation
@@ -265,6 +262,8 @@ def main(source_img_path, env_map_path, obj_path, out_path,
         bpy.data.objects[obj_name].location = (0, 0.09, 1.15)
     else:
         bpy.data.objects[obj_name].location = obj_location
+    if obj_name == "chev":
+        bpy.data.objects[obj_name].location[1] = 0.06
 
     bpy.context.view_layer.objects.active = bpy.data.objects[obj_name]
     bpy.data.materials[1].node_tree.nodes["Principled BSDF"].inputs["Metallic"].default_value = 0.5
@@ -279,9 +278,11 @@ def main(source_img_path, env_map_path, obj_path, out_path,
 def get_global_args():
     parser = ArgumentParserForBlender()
 
+    parser.add_argument("--obj_dir",
+                        help="dir to augment object: ",
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/scaled_objs")
     parser.add_argument("--obj",
-                        help="path to augment object: .obj",
-                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/scaled_objs/Bus.obj")
+                        help="select obj: Bus / chev")
     parser.add_argument("--bg",
                         help="path to camera background image: .png",
                         default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/subscenes/")
@@ -301,7 +302,7 @@ def get_global_args():
                         help="stride for the follow up distance",
                         default=10)
     args = parser.parse_args()
-    return args.bg, args.env, args.stride, args.pose, args.obj, args.out, args.light
+    return args.bg, args.env, args.stride, args.pose, args.obj_dir, args.obj, args.out, args.light
 
 
 def rot2eul(R):
@@ -325,9 +326,9 @@ def eul2rot(theta):
 
 if __name__ == "__main__":
 
-    img_dir, hdr_dir, stride, pose_dir, obj_path, out_dir, light_dir = get_global_args()
+    img_dir, hdr_dir, stride, pose_dir, obj_dir, obj_name, out_dir, light_dir = get_global_args()
     scenes = sorted(os.listdir(img_dir))
-    # scenes = [scenes[2]]  # only for debugging
+    scenes = [scenes[0]]  # only for debugging
     poses_file = sorted(os.listdir(pose_dir))
     light_rots = np.loadtxt(light_dir)
     light_rots = light_rots / 180 * PI
@@ -343,11 +344,12 @@ if __name__ == "__main__":
             pose = np.matmul(np.linalg.inv(pose1), pose2)
             obj_location = (pose[0, 3] / 10, 0.09, pose[2, 3] / 10)
 
-            rotation = rot2eul(pose[0:3, 0:3])
+            rot = np.matmul(pose[0:3, 0:3], eul2rot((PI / 2, 0, 0)))
+            rotation = rot2eul(rot)
 
             source_img_path = os.path.join(img_dir, scene, img)
             env_map_path = os.path.join(hdr_dir, scene, img.split('.')[0] + '.hdr')
             out_path = os.path.join(out_dir, scene, img.split('.')[0] + '.jpg')
 
-            main(source_img_path, env_map_path, obj_path, out_path,
+            main(source_img_path, env_map_path, obj_dir, obj_name, out_path,
                  obj_location, rotation, tuple(light_rots[idx, :]))
