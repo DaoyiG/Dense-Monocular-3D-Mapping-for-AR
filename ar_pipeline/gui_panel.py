@@ -99,7 +99,7 @@ class MyPanel(bpy.types.Panel):
         row.prop(context.active_object, "rotation_euler")
         layout.label(text="Object Metallic: ")
         row = layout.row()
-        row.prop(bpy.data.materials["material_0"].node_tree.nodes["Principled BSDF"].inputs["Metallic"], "default_value")
+        row.prop(bpy.data.materials[1].node_tree.nodes["Principled BSDF"].inputs["Metallic"], "default_value")
         
         # set render resolution
         layout.label(text="Render resolution: ")
@@ -336,7 +336,7 @@ if __name__ == "__main__":
     # bpy.data.objects[obj_name].scale = (1e-4, 1e-4, 1e-4)
     # bpy.data.objects[obj_name].rotation_euler = (177 / 180 * PI, PI /2, 0)
     bpy.context.view_layer.objects.active = bpy.data.objects[obj_name]
-    bpy.data.materials["material_0"].node_tree.nodes["Principled BSDF"].inputs["Metallic"].default_value = 0.5
+    bpy.data.materials[1].node_tree.nodes["Principled BSDF"].inputs["Metallic"].default_value = 0.5
     if bpy.data.objects.get("Cube") is not None:
         bpy.data.objects.remove(bpy.data.objects["Cube"],do_unlink=True)
     

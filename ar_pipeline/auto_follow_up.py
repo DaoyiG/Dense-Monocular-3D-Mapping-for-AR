@@ -267,7 +267,7 @@ def main(source_img_path, env_map_path, obj_path, out_path,
         bpy.data.objects[obj_name].location = obj_location
 
     bpy.context.view_layer.objects.active = bpy.data.objects[obj_name]
-    bpy.data.materials["material_0"].node_tree.nodes["Principled BSDF"].inputs["Metallic"].default_value = 0.5
+    bpy.data.materials[1].node_tree.nodes["Principled BSDF"].inputs["Metallic"].default_value = 0.5
 
     if bpy.data.objects.get("Cube") is not None:
         bpy.data.objects.remove(bpy.data.objects["Cube"], do_unlink=True)
