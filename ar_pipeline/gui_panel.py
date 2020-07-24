@@ -12,6 +12,10 @@ bl_info = {
 
 
 import bpy
+from bpy.types import Operator
+from bpy.props import FloatVectorProperty
+from bpy_extras.object_utils import AddObjectHelper, object_data_add
+from mathutils import Vector
 
 PI = 3.1416
 bpy.context.scene.use_nodes = True
@@ -307,7 +311,7 @@ if __name__ == "__main__":
     bpy.context.scene.camera.location = (0, 0, 0)
     bpy.context.scene.camera.rotation_euler = (0, PI, PI)
     
-    source_img_path = "/home/chendi/Downloads/city1.png"
+    source_img_path = "/Users/daoyi/Dense-Monocular-3D-Mapping-for-AR/assets/subscenes/scene1/000020.png"
     img = bpy.data.images.load(source_img_path)
     img_name = source_img_path.split("/")[-1]
     bpy.data.cameras[0].show_background_images = True
@@ -323,13 +327,13 @@ if __name__ == "__main__":
     assign_material(catcher, "shadow_catcher")
     
     # environment mapping
-    env_map_path = "/home/chendi/Downloads/city1.hdr"
+    env_map_path = "/Users/daoyi/Dense-Monocular-3D-Mapping-for-AR/assets/subscenes/scene1/000020.hdr"
     env_map = bpy.data.images.load(env_map_path)
     env_map_name = env_map_path.split("/")[-1]
     create_env_mapping(env_map_name)
     
     # pre_import
-    obj_path = "/home/chendi/Downloads/Bus obj/Bus.obj"
+    obj_path = "/Users/daoyi/Dense-Monocular-3D-Mapping-for-AR/augmentation_objects/Bus/Bus.obj"
     obj_name = obj_path.split("/")[-1].split(".")[0]
     if bpy.data.objects.get(obj_name) is None:
         Bus = bpy.ops.import_scene.obj(filepath=obj_path)

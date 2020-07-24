@@ -188,16 +188,16 @@ def test_simple(args):
 
             print("Saved depth prediction for Rendering to {}".format(name_dest_im))
 
-            # convert and save depth image for o3d
-            _, dep3d = disp_to_depth(disp1, 0.1, 100)
-            dep3d *= 1000
-
-            depths_o3d = pil.fromarray(dep3d.astype(np.uint32))
-
-            name_dest_o3d = os.path.join(o3d_output_directory, "{}.png".format(output_name))
-            depths_o3d.save(name_dest_o3d)
-
-            print("Saved depth prediction for Open3d    to {}".format(name_dest_o3d))
+            # # convert and save depth image for o3d
+            # _, dep3d = disp_to_depth(disp1, 0.1, 100)
+            # dep3d *= 1000
+            #
+            # depths_o3d = pil.fromarray(dep3d.astype(np.uint32))
+            #
+            # name_dest_o3d = os.path.join(o3d_output_directory, "{}.png".format(output_name))
+            # depths_o3d.save(name_dest_o3d)
+            #
+            # print("Saved depth prediction for Open3d    to {}".format(name_dest_o3d))
 
             # convert and save depth image for infinitam
             depinfi = disp_resized * 10000.0
