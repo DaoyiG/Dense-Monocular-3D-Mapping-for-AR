@@ -4,7 +4,7 @@
 # --env "your hdr path" \
 # --out "output img path"
 
-
+import os
 import argparse
 import sys
 import bpy
@@ -57,18 +57,20 @@ class ArgumentParserForBlender(argparse.ArgumentParser):
 def get_args():
     parser = ArgumentParserForBlender()
 
+    parser.add_argument("--obj_dir",
+                        help="dir to augment object: ",
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/scaled_objs")
     parser.add_argument("--obj",
-                        help="path to augment object: .obj",
-                        default="/home/chendi/Downloads/Bus obj/Bus.obj")
+                        help="select obj: Bus / chev")
     parser.add_argument("--bg",
                         help="path to camera background image: .png",
-                        default="/home/chendi/Downloads/city1.png")
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/city1.png")
     parser.add_argument("--env",
                         help="path to mapping environment: .hdr",
-                        default="/home/chendi/Downloads/city1.hdr")
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/city1.hdr")
     parser.add_argument("--out",
                         help="path to output image: .jpg",
-                        default="/home/chendi/Downloads/image.jpg")
+                        default="/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/image.jpg")
     args = parser.parse_args()
     return args
 
@@ -148,7 +150,8 @@ def create_shadowcatcher(name):
 
     diffuse2.inputs[0].default_value = (0, 0, 0, 1)
     colorramp.color_ramp.elements[0].color = (0, 0, 0, 1)
-    colorramp.color_ramp.elements[1].position = (0.5)
+    colorramp.color_ramp.elements[0].position = 0.4
+    colorramp.color_ramp.elements[1].position = 0.6
     colorramp.color_ramp.elements[1].color = (1, 1, 1, 1)
 
     # With names
@@ -218,10 +221,10 @@ def create_env_mapping(env_map_name):
     node_tree.nodes["Mapping"].inputs["Rotation"].default_value = (PI / 2, PI, PI / 2)
 
     # set strength
-    node_tree.nodes["Background"].inputs["Strength"].default_value = 0.4
+    node_tree.nodes["Background"].inputs["Strength"].default_value = 1
 
 
-def main(source_img_path, env_map_path, obj_path, out_path, obj_location=None):
+def main(source_img_path, env_map_path, obj_dir, obj_name, out_path, obj_location=None):
     if bpy.data.objects.get("Plane") is None:
         bpy.ops.mesh.primitive_plane_add()
     if bpy.data.objects.get("Light") is not None:
@@ -262,27 +265,25 @@ def main(source_img_path, env_map_path, obj_path, out_path, obj_location=None):
     assign_material(catcher, "shadow_catcher")
 
     # environment mapping
-    # env_map_path = args.env
     env_map = bpy.data.images.load(env_map_path)
     env_map_name = env_map_path.split("/")[-1]
     create_env_mapping(env_map_name)
 
     # pre_import
-    # obj_path = args.obj
-    obj_name = obj_path.split("/")[-1].split(".")[0]
     if bpy.data.objects.get(obj_name) is None:
-        Bus = bpy.ops.import_scene.obj(filepath=obj_path)
-
-    bpy.data.objects[obj_name].scale = (1e-4, 1e-4, 1e-4)
-    bpy.data.objects[obj_name].rotation_euler = (177 / 180 * PI, -PI / 2, 0)
+        path = os.path.join(obj_dir, obj_name + ".obj")
+        myobj = bpy.ops.import_scene.obj(filepath=path)
 
     if obj_location is None:
-        bpy.data.objects[obj_name].location = (0, 0.09, 1.15)
+        if obj_name == "Bus":
+            bpy.data.objects[obj_name].location = (0, 0.09, 1.15)
+        else:
+            bpy.data.objects[obj_name].location = (0, 0.06, 1.15)
     else:
         bpy.data.objects[obj_name].location = obj_location
 
     bpy.context.view_layer.objects.active = bpy.data.objects[obj_name]
-    bpy.data.materials["material_0"].node_tree.nodes["Principled BSDF"].inputs["Metallic"].default_value = 0.5
+    bpy.data.materials[1].node_tree.nodes["Principled BSDF"].inputs["Metallic"].default_value = 0.5
 
     if bpy.data.objects.get("Cube") is not None:
         bpy.data.objects.remove(bpy.data.objects["Cube"], do_unlink=True)
@@ -294,4 +295,4 @@ def main(source_img_path, env_map_path, obj_path, out_path, obj_location=None):
 if __name__ == "__main__":
     args = get_args()
 
-    main(args.bg, args.env, args.obj, args.out)
+    main(args.bg, args.env, args.obj_dir, args.obj, args.out)

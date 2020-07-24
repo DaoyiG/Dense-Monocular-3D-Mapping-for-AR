@@ -103,7 +103,7 @@ class MyPanel(bpy.types.Panel):
         row.prop(context.active_object, "rotation_euler")
         layout.label(text="Object Metallic: ")
         row = layout.row()
-        row.prop(bpy.data.materials["material_0"].node_tree.nodes["Principled BSDF"].inputs["Metallic"], "default_value")
+        row.prop(bpy.data.materials[1].node_tree.nodes["Principled BSDF"].inputs["Metallic"], "default_value")
         
         # set render resolution
         layout.label(text="Render resolution: ")
@@ -207,7 +207,8 @@ def create_shadowcatcher(name):
 
     diffuse2.inputs[0].default_value = (0,0,0,1)
     colorramp.color_ramp.elements[0].color = (0,0,0,1)
-    colorramp.color_ramp.elements[1].position = (0.5)
+    colorramp.color_ramp.elements[0].position = 0.4
+    colorramp.color_ramp.elements[1].position = 0.6
     colorramp.color_ramp.elements[1].color = (1, 1, 1, 1)
 
     #With names
@@ -278,7 +279,7 @@ def create_env_mapping(env_map_name):
     node_tree.nodes["Mapping"].inputs["Rotation"].default_value = (PI/2, PI, PI/2)
     
     # set strength
-    node_tree.nodes["Background"].inputs["Strength"].default_value = 0.4
+    node_tree.nodes["Background"].inputs["Strength"].default_value = 1.0
 
 
 
@@ -302,16 +303,14 @@ if __name__ == "__main__":
     bpy.data.lights["Sun"].energy = 16
     bpy.data.lights["Sun"].color = (1, 1, 1)
     
-    # TODO: Define exact resolution!
-    resolution_x, resolution_y = (1241, 376)
-    bpy.context.scene.render.resolution_x = 1392
-    bpy.context.scene.render.resolution_y = 512
+    bpy.context.scene.render.resolution_x = 1241
+    bpy.context.scene.render.resolution_y = 376
     
     bpy.data.cameras[0].lens = 21
     bpy.context.scene.camera.location = (0, 0, 0)
     bpy.context.scene.camera.rotation_euler = (0, PI, PI)
-    
-    source_img_path = "/Users/daoyi/Dense-Monocular-3D-Mapping-for-AR/assets/subscenes/scene1/000020.png"
+
+    source_img_path = "/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/city1.png"
     img = bpy.data.images.load(source_img_path)
     img_name = source_img_path.split("/")[-1]
     bpy.data.cameras[0].show_background_images = True
@@ -327,20 +326,23 @@ if __name__ == "__main__":
     assign_material(catcher, "shadow_catcher")
     
     # environment mapping
-    env_map_path = "/Users/daoyi/Dense-Monocular-3D-Mapping-for-AR/assets/subscenes/scene1/000020.hdr"
+
+    env_map_path = "/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/city1.hdr"
+
     env_map = bpy.data.images.load(env_map_path)
     env_map_name = env_map_path.split("/")[-1]
     create_env_mapping(env_map_name)
     
     # pre_import
-    obj_path = "/Users/daoyi/Dense-Monocular-3D-Mapping-for-AR/augmentation_objects/Bus/Bus.obj"
+    obj_path = "/home/chendi/PycharmProjects/Dense-Monocular-3D-Mapping-for-AR/ar_pipeline/scaled_objs/Bus.obj"
     obj_name = obj_path.split("/")[-1].split(".")[0]
     if bpy.data.objects.get(obj_name) is None:
         Bus = bpy.ops.import_scene.obj(filepath=obj_path)
     
-    bpy.data.objects[obj_name].scale = (1e-4, 1e-4, 1e-4)
+    # bpy.data.objects[obj_name].scale = (1e-4, 1e-4, 1e-4)
+    # bpy.data.objects[obj_name].rotation_euler = (177 / 180 * PI, PI /2, 0)
     bpy.context.view_layer.objects.active = bpy.data.objects[obj_name]
-    bpy.data.materials["material_0"].node_tree.nodes["Principled BSDF"].inputs["Metallic"].default_value = 0.5
+    bpy.data.materials[1].node_tree.nodes["Principled BSDF"].inputs["Metallic"].default_value = 0.5
     if bpy.data.objects.get("Cube") is not None:
         bpy.data.objects.remove(bpy.data.objects["Cube"],do_unlink=True)
     
