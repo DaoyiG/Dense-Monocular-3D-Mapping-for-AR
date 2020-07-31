@@ -5,6 +5,5 @@
 *.ply
 *.obj
 __pycache__
-assets
 
 models/*

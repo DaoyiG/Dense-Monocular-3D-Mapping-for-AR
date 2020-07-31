@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/daoyi/Infinitam_kitti/InfiniTAM/ITMLib/Utils/ITMLibSettings.cpp
+ITMLibSettings.h
+/Users/daoyi/Infinitam_kitti/InfiniTAM/ITMLib/Utils/ITMLibSettings.h
+climits
+-
+cmath
+-
+
+/Users/daoyi/Infinitam_kitti/InfiniTAM/ITMLib/Utils/ITMLibSettings.h
+ITMSceneParams.h
+/Users/daoyi/Infinitam_kitti/InfiniTAM/ITMLib/Utils/ITMSceneParams.h
+ITMSurfelSceneParams.h
+/Users/daoyi/Infinitam_kitti/InfiniTAM/ITMLib/Utils/ITMSurfelSceneParams.h
+../../ORUtils/MemoryDeviceType.h
+/Users/daoyi/Infinitam_kitti/InfiniTAM/ORUtils/MemoryDeviceType.h
+
+/Users/daoyi/Infinitam_kitti/InfiniTAM/ITMLib/Utils/ITMSceneParams.h
+
+/Users/daoyi/Infinitam_kitti/InfiniTAM/ITMLib/Utils/ITMSurfelSceneParams.h
+
+/Users/daoyi/Infinitam_kitti/InfiniTAM/ORUtils/MemoryDeviceType.h
+

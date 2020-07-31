@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/daoyig/Dense-Monocular-3D-Mapping-for-AR/Reconstruction/InfiniTAM/ITMLib/Utils/ITMLibSettings.cpp
+ITMLibSettings.h
+/Users/daoyig/Dense-Monocular-3D-Mapping-for-AR/Reconstruction/InfiniTAM/ITMLib/Utils/ITMLibSettings.h
+climits
+-
+cmath
+-
+
+/Users/daoyig/Dense-Monocular-3D-Mapping-for-AR/Reconstruction/InfiniTAM/ITMLib/Utils/ITMLibSettings.h
+ITMSceneParams.h
+/Users/daoyig/Dense-Monocular-3D-Mapping-for-AR/Reconstruction/InfiniTAM/ITMLib/Utils/ITMSceneParams.h
+ITMSurfelSceneParams.h
+/Users/daoyig/Dense-Monocular-3D-Mapping-for-AR/Reconstruction/InfiniTAM/ITMLib/Utils/ITMSurfelSceneParams.h
+../../ORUtils/MemoryDeviceType.h
+/Users/daoyig/Dense-Monocular-3D-Mapping-for-AR/Reconstruction/InfiniTAM/ORUtils/MemoryDeviceType.h
+
+/Users/daoyig/Dense-Monocular-3D-Mapping-for-AR/Reconstruction/InfiniTAM/ITMLib/Utils/ITMSceneParams.h
+
+/Users/daoyig/Dense-Monocular-3D-Mapping-for-AR/Reconstruction/InfiniTAM/ITMLib/Utils/ITMSurfelSceneParams.h
+
+/Users/daoyig/Dense-Monocular-3D-Mapping-for-AR/Reconstruction/InfiniTAM/ORUtils/MemoryDeviceType.h
+
