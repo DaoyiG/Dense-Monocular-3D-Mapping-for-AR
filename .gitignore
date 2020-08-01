@@ -17,4 +17,4 @@ Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/fragments
 Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/image
 Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/scene
 
-models/*
+DepthPrediction/models/*
