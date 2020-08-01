@@ -11,9 +11,15 @@ The pipeline of our project is from a sequence of monocular RGB images to a dens
 ### Project Environment:  
 Create our environment with 
 ```
-conda env create -f environment.yml
+conda create --name <env> --file requirements.txt
 ```
 
+You may also need to install these dependencies in this environment
+```
+conda install pytorch=0.4.1 torchvision=0.2.1 -c pytorch
+pip install opencv-python
+pip install open3d
+```
 ### Run Whole Pipeline  
 You can simply use terminal under this directory and type
 ```
