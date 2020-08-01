@@ -8,10 +8,6 @@ This is the reference PyTorch implementation for training and testing depth esti
 >
 > [ICCV 2019](https://arxiv.org/abs/1806.01260)
 
-<p align="center">
-  <img src="assets/teaser.gif" alt="example input output gif" width="600" />
-</p>
-
 This code is for non-commercial use; please see the [license file](LICENSE) for terms.
 
 If you find our work useful in your research please consider citing our paper:
@@ -49,8 +45,6 @@ We provide the following  options for `--model_name`:
 
 | `--model_name`          | Training modality | Imagenet pretrained? | Model resolution  | KITTI abs. rel. error |  delta < 1.25  |
 |-------------------------|-------------------|--------------------------|-----------------|------|----------------|
-| [`mono_640x192`](https://storage.googleapis.com/niantic-lon-static/research/monodepth2/mono_640x192.zip)          | Mono              | Yes | 640 x 192                | 0.115                 | 0.877          |
-| [`mono+stereo_640x192`](https://storage.googleapis.com/niantic-lon-static/research/monodepth2/mono%2Bstereo_640x192.zip)   | Mono + Stereo     | Yes | 640 x 192                | 0.106                 | 0.874          |
 | [`mono_1024x320`](https://storage.googleapis.com/niantic-lon-static/research/monodepth2/mono_1024x320.zip)         | Mono              | Yes | 1024 x 320               | 0.115                 | 0.879          |
 
 
