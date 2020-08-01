@@ -11,21 +11,22 @@ The pipeline of our project is from a sequence of monocular RGB images to a dens
 ### Project Environment:  
 Create our environment with 
 ```
-conda create --name <env> --file requirements.txt
+conda create -n rec4aug python=3.6.6
 ```
 
-You may also need to install these dependencies in this environment
+After activate the environment ```rec4aug```, you need to install:
 ```
 conda install pytorch=0.4.1 torchvision=0.2.1 -c pytorch
-pip install opencv-python
 pip install open3d
+pip install opencv-python
 ```
 ### Run Whole Pipeline  
 You can simply use terminal under this directory and type
 ```
 bash run_pipeline.sh
 ```
-to run the whole pipeline of our project. You can choose to skip a stage( e.g. reconstruction using open3d) by entering N with respect to corresponding shell prompt.
+to run the whole pipeline of our project. You can choose whether to skip a stage( e.g. reconstruction using open3d) 
+by entering y or N with respect to corresponding shell prompt.
 ### Additional Dependencies:
 
 We use imagemagick to transform the output of monodepth to the format taken by InfiniTAM  
