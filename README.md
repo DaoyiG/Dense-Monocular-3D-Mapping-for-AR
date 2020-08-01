@@ -14,6 +14,12 @@ Create our environment with
 conda env create -f environment.yml
 ```
 
+### Run Whole Pipeline  
+You can simply use terminal under this directory and type
+```
+bash run_pipeline.sh
+```
+to run the whole pipeline of our project. You can choose to skip a stage( e.g. reconstruction using open3d) by entering N with respect to corresponding shell prompt.
 ### Additional Dependencies:
 
 We use imagemagick to transform the output of monodepth to the format taken by InfiniTAM  

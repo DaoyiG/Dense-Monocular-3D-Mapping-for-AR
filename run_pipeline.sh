@@ -4,6 +4,77 @@
 # you may need to first put all the test images in a test_images folder under assets/
 # you will get the depth output for monodepth presentation, o3d and infiniTAM
 
+function reconstruct_o3d() {
+  # move scene image and o3d depth to o3d reconstruction pipeline
+  cp -r $dir/DepthPrediction/assets/test_images/ $dir/Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/image/
+  cp -r $dir/DepthPrediction/assets/output_depth_o3d/ $dir/Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/depth/
+
+  echo "===================================="
+  echo "Start Reconstruction Using Open3d"
+  echo "===================================="
+
+  cd $dir/Reconstruction_o3d/ReconstructionSystem/
+  python run_system.py $dir/Reconstruction_o3d/ReconstructionSystem/config/kitti_1.json --make --register --refine --integrate
+
+  echo "===================================="
+  echo "Visualize Reconstruction"
+  echo "===================================="
+  cd $dir/src
+  python pcd_vis.py --scene_path $dir/Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/scene/integrated.ply --ext ply
+
+}
+
+function reconstruct_infinitam() {
+
+  # first need to convert rgb to ppm format and depth to pgm format
+  echo "===================================="
+  echo "Convert depth and rgb image to infinitam format"
+  echo "===================================="
+  cp -r $dir/DepthPrediction/assets/test_images/ $dir/DepthPrediction/assets/output_rgb_infinitam/
+
+  cd $dir/DepthPrediction/assets/output_rgb_infinitam/ && magick mogrify -format ppm *.png
+  cd $dir/DepthPrediction/assets/output_depth_infinitam/ && magick mogrify -format pgm *.png
+
+  echo "===================================="
+  echo "Done"
+  echo "===================================="
+
+  # run InfiniTAM
+  echo "===================================="
+  echo "Start Reconstruction Using InfiniTAM"
+  echo "===================================="
+
+  cd $dir/Reconstruction/InfiniTAM/build/Apps/InfiniTAM/
+  ./InfiniTAM $dir/Reconstruction/InfiniTAM/kitti/calib3.txt \
+    $dir/DepthPrediction/assets/output_rgb_infinitam/%04i.ppm \
+    $dir/DepthPrediction/assets/output_depth_infinitam/%04i.pgm
+
+  echo "===================================="
+  echo "Reconstruction Finished"
+  echo "===================================="
+
+  echo "===================================="
+  echo "Visualize Reconstruction"
+  echo "===================================="
+
+  cd $dir/src
+  python pcd_vis.py --scene_path $dir/Reconstruction/InfiniTAM/build/Apps/InfiniTAM/color_mesh.obj --ext obj
+}
+
+function auto_ar_followup() {
+
+  echo "===================================="
+  echo "AUTO MODE FOR AR"
+  echo "===================================="
+
+  blender -b --python auto_follow_up.py --obj_dir $dir/AR/scaled_objs --obj "Bus" \
+  --bg $dir/AR/subscenes/ \
+  --env $dir/AR/hdrs/ \
+  --out $dir/AR/outputs/ \
+  --pose $dir/AR/poses/ \
+  --light $dir/AR/light.txt
+}
+
 echo "===================================="
 echo "Set up folders for specific outputs"
 echo "===================================="
@@ -36,7 +107,6 @@ echo "===================================="
 echo "See rendered video under src directory"
 echo "===================================="
 
-
 echo "===================================="
 echo "Depth Prediction Started"
 echo "===================================="
@@ -64,56 +134,20 @@ echo "===================================="
 echo "See rendered video under src directory"
 echo "===================================="
 
+read -r -p "Do you want to reconstruct using Open3d? [y/N] " response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+  reconstruct_o3d
+fi
 
-echo "===================================="
-echo "Convert depth and rgb image to infinitam format"
-echo "===================================="
-cp -r $dir/DepthPrediction/assets/test_images/ $dir/DepthPrediction/assets/output_rgb_infinitam/
+read -r -p "Do you want to reconstruct using InfiniTAM? [y/N] " response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+  reconstruct_infinitam
+fi
 
-cd $dir/DepthPrediction/assets/output_rgb_infinitam/ && magick mogrify -format ppm *.png
-cd $dir/DepthPrediction/assets/output_depth_infinitam/ && magick mogrify -format pgm *.png
-
-echo "===================================="
-echo "Done"
-echo "===================================="
-
-# move scene image and o3d depth to o3d reconstruction pipeline
-cp -r $dir/DepthPrediction/assets/test_images/ $dir/Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/image/
-cp -r $dir/DepthPrediction/assets/output_depth_o3d/ $dir/Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/depth/
-
-echo "===================================="
-echo "Start Reconstruction Using Open3d"
-echo "===================================="
-
-cd $dir/Reconstruction_o3d/ReconstructionSystem/
-python run_system.py $dir/Reconstruction_o3d/ReconstructionSystem/config/kitti_1.json --make --register --refine --integrate
-
-echo "===================================="
-echo "Visualize Reconstruction"
-echo "===================================="
-cd $dir/src
-python pcd_vis.py --scene_path $dir/Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/scene/integrated.ply --ext ply
-
-# run InfiniTAM
-echo "===================================="
-echo "Start Reconstruction Using InfiniTAM"
-echo "===================================="
-
-cd $dir/Reconstruction/InfiniTAM/build/Apps/InfiniTAM/
-./InfiniTAM $dir/Reconstruction/InfiniTAM/kitti/calib3.txt \
-  $dir/DepthPrediction/assets/output_rgb_infinitam/%04i.ppm \
-  $dir/DepthPrediction/assets/output_depth_infinitam/%04i.pgm
-
-echo "===================================="
-echo "Reconstruction Finished"
-echo "===================================="
-
-echo "===================================="
-echo "Visualize Reconstruction"
-echo "===================================="
-
-cd $dir/src
-python pcd_vis.py --scene_path $dir/Reconstruction/InfiniTAM/build/Apps/InfiniTAM/color_mesh.obj --ext obj
+read -r -p "Do you want to use Blender script to automatically generate AR images? [y/N] " response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+  auto_ar_followup
+fi
 
 wait
 

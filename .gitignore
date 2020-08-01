@@ -6,4 +6,15 @@
 *.obj
 __pycache__
 
+DepthPrediction/assets/output_depth_infinitam
+DepthPrediction/assets/output_depth_o3d
+DepthPrediction/assets/output_depth_rendering
+DepthPrediction/assets/output_rgb_infinitam
+DepthPrediction/assets/output_npy_mono
+
+Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/depth
+Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/fragments
+Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/image
+Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/scene
+
 models/*
