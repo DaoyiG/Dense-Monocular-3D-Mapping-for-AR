@@ -1,4 +1,5 @@
 # Dense-Monocular-3D-Mapping-for-AR
+
 ### Members:  
 [HanzhiC](https://github.com/HanzhiC)  
 [Spazierganger](https://github.com/Spazierganger)  
@@ -8,6 +9,23 @@
 This is the course project of **Perception and Learning in Robotics and Augmented Reality** in summer semester 2020 in computer vision group from TUM Chair for Computer Aided Medical Procedures & Augmented Reality.  
 
 The pipeline of our project is from a sequence of monocular RGB images to a dense 3D reconstruction, and an automatic ( manual as well) AR pipeline to create a sequence of augmented images.  
+
+<div align=center><img width="800" height="400" src="https://github.com/DaoyiG/Dense-Monocular-3D-Mapping-for-AR/blob/master/images/stages.png"/></div>  
+
+**1. Depth Prediction**  
+<div align=center><img src="https://github.com/DaoyiG/Dense-Monocular-3D-Mapping-for-AR/blob/master/images/input%2000_00_00-00_00_30.gif"/></div>  
+<div align=center><img src="https://github.com/DaoyiG/Dense-Monocular-3D-Mapping-for-AR/blob/master/images/depth%2000_00_00-00_00_30.gif"/></div>  
+
+**2. Reconstruction**
+<div align=center><img src="https://github.com/DaoyiG/Dense-Monocular-3D-Mapping-for-AR/blob/master/images/blender1500_final%2000_00_00-00_00_30.gif"/></div>  
+
+**3. Augmentation**  
+Auto Mode:  
+<div align=center><img src="https://github.com/DaoyiG/Dense-Monocular-3D-Mapping-for-AR/blob/master/images/scene6%2000_00_00-00_00_30.gif"/></div>  
+
+Manual Mode:  
+<div align=center><img src="https://github.com/DaoyiG/Dense-Monocular-3D-Mapping-for-AR/blob/master/images/scene3_aug.png"/></div>  
+
 ### Project Environment:  
 Create our environment with 
 ```
@@ -33,14 +51,10 @@ We use imagemagick to transform the output of monodepth to the format taken by I
 [imagemagick](https://imagemagick.org/)
 
 ### Related Works:  
-[Digging into Self-Supervised Monocular Depth Prediction (Monodepth2)](https://github.com/nianticlabs/monodepth2)  
+[Monodepth2](https://github.com/nianticlabs/monodepth2)  
 
 [InfiniTAM v3](https://github.com/victorprad/InfiniTAM)  
 
-[OpenSfM](https://github.com/mapillary/OpenSfM)  
-
 [Open3d Reconstruction Pipeline](https://github.com/intel-isl/Open3D/tree/master/examples/python/ReconstructionSystem)  
-
-[Augmented Reality Meets Computer Vision : Efficient Data Generation for Urban Driving Scenes](https://arxiv.org/abs/1708.01566)  
 
 
