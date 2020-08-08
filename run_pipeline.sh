@@ -6,6 +6,7 @@
 
 function reconstruct_o3d() {
   # move scene image and o3d depth to o3d reconstruction pipeline
+  mkdir $dir/Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1
   cp -r $dir/DepthPrediction/assets/test_images/ $dir/Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/image/
   cp -r $dir/DepthPrediction/assets/output_depth_o3d/ $dir/Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/depth/
 
@@ -66,7 +67,7 @@ function auto_ar_followup() {
   echo "===================================="
   echo "AUTO MODE FOR AR"
   echo "===================================="
-
+  cd $dir/AR/
   blender -b --python auto_follow_up.py --obj_dir $dir/AR/scaled_objs --obj "Bus" \
   --bg $dir/AR/subscenes/ \
   --env $dir/AR/hdrs/ \
