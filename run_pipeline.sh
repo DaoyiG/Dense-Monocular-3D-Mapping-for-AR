@@ -14,13 +14,13 @@ function reconstruct_o3d() {
   echo "Start Reconstruction Using Open3d"
   echo "===================================="
 
-  cd $dir/Reconstruction_o3d/ReconstructionSystem/
+  cd $dir/Reconstruction_o3d/ReconstructionSystem/ || exit
   python run_system.py $dir/Reconstruction_o3d/ReconstructionSystem/config/kitti_1.json --make --register --refine --integrate
 
   echo "===================================="
   echo "Visualize Reconstruction"
   echo "===================================="
-  cd $dir/src
+  cd $dir/src || exit
   python pcd_vis.py --scene_path $dir/Reconstruction_o3d/ReconstructionSystem/dataset/kitti_1/scene/integrated.ply --ext ply
 
 }
@@ -45,6 +45,7 @@ function reconstruct_infinitam() {
   echo "Start Reconstruction Using InfiniTAM"
   echo "===================================="
 
+  # shellcheck disable=SC2164
   cd $dir/Reconstruction/InfiniTAM/build/Apps/InfiniTAM/
   ./InfiniTAM $dir/Reconstruction/InfiniTAM/kitti/calib3.txt \
     $dir/DepthPrediction/assets/output_rgb_infinitam/%04i.ppm \
@@ -58,7 +59,7 @@ function reconstruct_infinitam() {
   echo "Visualize Reconstruction"
   echo "===================================="
 
-  cd $dir/src
+  cd $dir/src || exit
   python pcd_vis.py --scene_path $dir/Reconstruction/InfiniTAM/build/Apps/InfiniTAM/color_mesh.obj --ext obj
 }
 
@@ -67,8 +68,11 @@ function auto_ar_followup() {
   echo "===================================="
   echo "AUTO MODE FOR AR"
   echo "===================================="
+  # shellcheck disable=SC2164
   cd $dir/AR/
-  blender -b --python auto_follow_up.py --obj_dir $dir/AR/scaled_objs --obj "Bus" \
+  blender -b --python auto_follow_up.py --\
+  --obj_dir $dir/AR/scaled_objs \
+  --obj "Bus" \
   --bg $dir/AR/subscenes/ \
   --env $dir/AR/hdrs/ \
   --out $dir/AR/outputs/ \
@@ -102,7 +106,7 @@ mkdir $dir/DepthPrediction/assets/output_depth_o3d/
 echo "===================================="
 echo "Render input rgb images to video"
 echo "===================================="
-cd $dir/src
+cd $dir/src || exit
 python pic2video.py --image_path $dir/DepthPrediction/assets/test_images/ --output_name input.mp4
 echo "===================================="
 echo "See rendered video under src directory"
@@ -113,7 +117,7 @@ echo "Depth Prediction Started"
 echo "===================================="
 
 for file in $dir/DepthPrediction/assets/test_images/*; do
-  cd $dir/DepthPrediction/
+  cd $dir/DepthPrediction/ || exit
   python test_simple.py --image_path $file --output_depth $dir/DepthPrediction/assets/output_depth_rendering/ \
     --output_npy $dir/DepthPrediction/assets/output_npy_mono/ \
     --output_depth_o3d $dir/DepthPrediction/assets/output_depth_o3d/ \
@@ -129,7 +133,7 @@ echo "===================================="
 echo "===================================="
 echo "Render output depth images to video"
 echo "===================================="
-cd $dir/src
+cd $dir/src || exit
 python pic2video.py --image_path $dir/DepthPrediction/assets/output_depth_rendering/ --output_name depth.mp4
 echo "===================================="
 echo "See rendered video under src directory"
