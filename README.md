@@ -1,4 +1,4 @@
-# Dense-Monocular-3D-Mapping-for-AR
+# Rec4Aug: an Efficient Pipeline for Traffic Scene Data Generation
 
 ### :student: Members:  
 [HanzhiC](https://github.com/HanzhiC)  
@@ -8,7 +8,7 @@
 ### :page_with_curl: Project Description:
 This is the course project of **Perception and Learning in Robotics and Augmented Reality** in summer semester 2020 in computer vision group from TUM Chair for Computer Aided Medical Procedures & Augmented Reality.  
 
-The pipeline of our project is from a sequence of monocular RGB images to a dense 3D reconstruction, and an automatic ( manual as well) AR pipeline to create a sequence of augmented images.  
+This pipeline first colloects a sequence of monocular RGB and predicted depth images for a large-scale dense 3D reconstruction, and then perform an AR pipeline to place virtual objects on top of ground to generate realistic traffic scene data automatically (manual mode is enabled as well for fine tunning).
 
 <div align=center><img width="800" height="400" src="https://github.com/DaoyiG/Dense-Monocular-3D-Mapping-for-AR/blob/master/images/stages.png"/></div>  
 
