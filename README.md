@@ -6,24 +6,27 @@
 [DaoyiG](https://github.com/DaoyiG)
 
 ### :page_with_curl: Project Description:
-This is the course project of **Perception and Learning in Robotics and Augmented Reality** in summer semester 2020 in computer vision group from TUM Chair for Computer Aided Medical Procedures & Augmented Reality.  
 
 This pipeline first colloects a sequence of monocular RGB and predicted depth images for a large-scale dense 3D reconstruction, and then perform an AR pipeline to place virtual objects on top of ground to generate realistic traffic scene data automatically (manual mode is enabled as well for fine tunning).
 
 <div align=center><img width="800" height="400" src="https://github.com/DaoyiG/Dense-Monocular-3D-Mapping-for-AR/blob/master/images/stages.png"/></div>  
 
 >**1. Depth Prediction**  
+
 <div align=center><img src="https://github.com/DaoyiG/Dense-Monocular-3D-Mapping-for-AR/blob/master/images/input%2000_00_00-00_00_30.gif"/></div>  
 <div align=center><img src="https://github.com/DaoyiG/Dense-Monocular-3D-Mapping-for-AR/blob/master/images/depth%2000_00_00-00_00_30.gif"/></div>  
 
 >**2. Reconstruction**
+
 <div align=center><img src="https://github.com/DaoyiG/Dense-Monocular-3D-Mapping-for-AR/blob/master/images/blender1500_final%2000_00_00-00_00_30.gif"/></div>  
 
 >**3. Augmentation**  
 >>Auto Mode:  
+
 <div align=center><img src="https://github.com/DaoyiG/Dense-Monocular-3D-Mapping-for-AR/blob/master/images/scene6%2000_00_00-00_00_30.gif"/></div>  
 
->>Manual Mode:  
+>>Manual Mode: 
+
 <div align=center><img src="https://github.com/DaoyiG/Dense-Monocular-3D-Mapping-for-AR/blob/master/images/scene3_aug.png"/></div>  
 
 ### :gear: Project Environment:  
