@@ -6,7 +6,7 @@
 [DaoyiG](https://github.com/DaoyiG)
 
 ### :page_with_curl: Project Description:
-Our pipeline first collects a sequence of monocular RGB images and predicted depth for large-scale dense 3D scene reconstruction, and then automatically place virtual objects on top of ground in order to generate realistic traffic scene data (manual mode is enabled as well for fine tunning).
+Our pipeline first collects a sequence of monocular RGB images and predicted depth for large-scale dense 3D scene reconstruction, and then automatically place virtual objects on top of ground in order to generate realistic traffic scene data (manual mode is enabled as well for fine tunning or generating 3D occlusion awareness).
 
 <div align=center><img width="800" height="400" src="https://github.com/DaoyiG/Dense-Monocular-3D-Mapping-for-AR/blob/master/images/stages.png"/></div>  
 
