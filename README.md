@@ -43,8 +43,7 @@ pip install opencv-python
 ```  
 ### :toolbox: Additional Dependencies:
 
-We use imagemagick to transform the output of monodepth to the format taken by InfiniTAM  
-[imagemagick](https://imagemagick.org/)  
+We use [imagemagick](https://imagemagick.org/) to transform the output of monodepth to the format taken by InfiniTAM  
 
 ### :clapper: Run Whole Pipeline  
 You can simply use terminal under this directory and type
