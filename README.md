@@ -1,4 +1,4 @@
-# Rec4Aug: an Efficient Pipeline for Traffic Scene Data Generation
+# Rec4Aug: An Efficient Pipeline for Traffic Scene Data Generation
 
 ### :student: Members:  
 [HanzhiC](https://github.com/HanzhiC)  
